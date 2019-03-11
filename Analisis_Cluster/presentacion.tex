@@ -1,0 +1,475 @@
+\documentclass[11pt,a4paper]{beamer}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{graphicx,wrapfig,lipsum}
+\usepackage{listings}
+
+\usetheme{Madrid}
+
+
+\begin{document}
+	\author{Francisco Solano López Rodríguez}
+	\title{\textbf{Análisis Cluster}}
+	\subtitle{Estadística multivariante}
+	\date{}
+	%\setbeamercovered{transparent}
+	%\setbeamertemplate{template}{}
+	\frame[plain]{\maketitle}
+	\AtBeginSection[]
+	{
+	\begin{frame}
+		\frametitle{Índice}
+		\tableofcontents[currentsection]
+	\end{frame}
+	}
+	
+	\section{Introducción}
+	\begin{frame}
+		\frametitle{Introducción}
+		El Análisis Cluster, conocido como Análisis de Conglomerados, es un método estadístico multivariante de clasificación automática de datos, que busca agrupar elementos (o variables) tratando de lograr la máxima
+		homogeneidad en cada grupo y la mayor diferencia entre los grupos.
+		
+		\vspace*{0.5cm}
+		
+		Comienza con un conjunto de datos conteniendo información sobre una muestra de entidades e
+		intenta reorganizarlas en grupos relativamente homogéneos a los que llamaremos clusters.
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Introducción}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=1\linewidth]{img/clustering}
+			\label{fig:clustering}
+		\end{figure}
+
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Aplicaciones del Análisis cluster}
+		
+		Algunas de las principales áreas de aplicación del Análisis Cluster son:
+		
+		\begin{itemize}
+		\item Biología, biología computacional y bioinformática.
+		\item Medicina.
+		\item Empresarial y marketing.
+		\item Análisis de red social.
+		\item Agrupación de resultados de búsqueda.
+		\item Sistemas de recomendación.
+		\item Climatología.
+		\item Etc, etc, ...
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Etapas en Análisis Cluster}
+		
+		Las etapas a seguir en el empleo de una técnica cluster pueden ser resumidas en los siguientes puntos:
+		
+		\vspace{0.25cm}
+		
+		\begin{enumerate}
+		\item Elección de las variables.
+		\item Elección de la medida de asociación.
+		\item Elección de la técnica cluster a emplear en el estudio.
+		\item Validación de los resultados e interpretación de los mismos.
+		\end{enumerate}
+	\end{frame}
+	
+	\section{Elección de las variables}
+	\begin{frame}
+		\frametitle{Elección de las variables}
+		
+		Este paso es de gran importancia, en el se deberá elegir un conjunto concreto de características para describir a cada individuo. 
+		
+		\vspace{0.25cm}
+		
+		Dependiendo del problema las variables pueden ser:
+		
+		\begin{itemize}
+		\item Cualitativas:
+		
+			\begin{itemize}
+			\item Ordinales
+			\item Nominales
+			\end{itemize}
+			
+		\item Cuantitativas:
+			
+			\begin{itemize}
+			\item Discretas
+			\item Continuas
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	
+	\section{Elección de las medidas de asociación}
+	\begin{frame}
+		\frametitle{Elección de las medidas de asociación}
+		
+		La mayoría de los métodos cluster requieren establecer una medida de asociación que permita medir la proximidad de los objetos en estudio. 
+		
+		\vspace{0.25cm}
+		
+		En el Análisis Cluster de individuos la proximidad suele expresarse en términos de distancias.
+		
+		\vspace{0.25cm}
+		
+		En el Análisis Cluster de variables la proximidad suele expresarse en términos de unas funciones llamadas similaridades.
+	\end{frame}
+	
+
+	\begin{frame}
+		\frametitle{Medidas de asociación}
+		
+		Las medidas de asociación que vamos a considerar en un primer lugar son las siguientes:
+		
+		\begin{itemize}
+		\item \textbf{Distancia:} cuando se elige una distancia como medida de asociación los grupos formados contendrán individuos parecidos de forma que la distancia entre ellos debe ser pequeña.
+		\item \textbf{Similaridad:} cuando se elige una similaridad los grupos formados contendrán individuos con una similaridad alta entre ellos.
+		\end{itemize}
+	\end{frame}
+	
+	\subsection{Distancias}
+	\begin{frame}
+		\frametitle{Medidas de asociación: Distancias}
+				
+		\textbf{Definición.} Sea U un conjunto finito o infinito de elementos. Una función $d: U \times U \rightarrow \mathbb{R}$ se llama distancia métrica si $\forall x,y \in U$ se tiene:
+		
+		\begin{enumerate}
+		\item $d(x,y) \geq 0$
+		\item $d(x,y) = 0 \Leftrightarrow x = y$
+		\item $d(x,y) = d(y,x)$
+		\item $d(x,z) \leq d(x,y) + d(y,z), \forall z \in U$
+		\end{enumerate}		
+	\end{frame}
+	
+	\subsection{Similaridades}
+	\begin{frame}
+		\frametitle{Medidas de asociación: similaridades}
+				
+		\textbf{Definición.} Sea U un conjunto finito o infinito de elementos. Una función $s: U \times U \rightarrow \mathbb{R}$ se llama similaridad si cumple las siguientes propiedades: $\forall x, y \in U$, $s_0$ número real finito arbitrario.
+		
+		\begin{enumerate}
+		\item $s(x,y) \leq s_0$
+		\item $s(x,x) = s_0$
+		\item $s(x,y) = s(y,x)$
+		\end{enumerate}
+				
+		\vspace{0.25cm}
+		
+		\textbf{Definición.} Una similaridad se llama similaridad métrica si verifica:
+		
+		\begin{enumerate}
+		\item $s(x,y) = s_0\rightarrow x=y$
+		\item $|s(x,y)+s(y,z)|s(x,z) \geq s(s,y)s(y,z), \forall z \in U$
+		\end{enumerate}
+	\end{frame}
+	
+	\section{Elección de la técnica cluster a emplear en el estudio}
+	\begin{frame}
+		\frametitle{Elección de la técnica cluster a emplear en el estudio}
+		
+		\textbf{Clasificación de las técnicas clusters}
+		
+		\begin{itemize}
+		\item \textbf{Métodos jerárquicos:}  tienen por objetivo agrupar clusters para formar uno nuevo o bien separar alguno ya existente para dar origen a otros dos, de tal forma que, si sucesivamente se va efectuando este proceso de aglomeración o división, se minimice alguna distancia o bien se maximice alguna medida de similitud.
+		\item \textbf{Métodos no jerárquicos:} también llamados de partición, tienen como objetivo dividir el conjunto de observaciones en K clusters, donde el valor de K ha sido definido previamente. 
+		\end{itemize}		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+		
+		\textbf{Métodos jerárquicos} se subdividen en:
+		
+		\vspace*{0.25cm}
+		
+		\begin{itemize}
+		\item \textbf{Métodos aglomerativos:} se parte de tantos grupos como individuos haya en el estudio y se van agrupando hasta llegar a tener todos los casos en un mismo grupo.
+
+		\vspace*{0.25cm}
+				
+		\item \textbf{Disociativos:} se parte de un solo grupo que contiene todos los casos y a través de sucesivas divisiones se forman grupos cada vez más pequeños.
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+		
+		\textbf{Métodos aglomerativos}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.5\linewidth]{img/aglomerativos}
+			\label{fig:aglomerativos}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+		
+		\textbf{Métodos disociativos}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.5\linewidth]{img/disociativos}
+			\label{fig:disociativos}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+			
+		Los métodos jerárquicos para realizar la división o la aglomeración pueden utilizar diversas distancias realizar dicho proceso de división o aglomeración. Por ejemplo en el caso de aglomeración irán uniendo en cada nivel aquellos individuos o clusters que tengan una menor distancia entre ellos (o en el caso de la similitud se buscará una maximización).
+		
+		\vspace{0.25cm} 
+		En las siguientes diapositivas veremos aquellas distancias más comunes.
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+		
+		\textbf{Distancia mínima (o similitud máxima)}
+		
+		\begin{tabular}{cl}  
+			\begin{tabular}{c}
+			\parbox{0.45\linewidth}{
+				\begin{equation*}
+				d(C_i, C_j) = \min_{x_l \in C_i, x_m \in C_j} \{d(x_l,x_m)\}
+				\end{equation*}
+			}
+			\end{tabular}
+			& \begin{tabular}{l}
+	  			\includegraphics[width=0.4\linewidth]{img/mas_cercano}
+			\end{tabular}  \\
+		\end{tabular}
+		
+		\vspace{0.5cm}		
+		
+		\textbf{Distancia máxima (o similitud mínima)}
+		
+		\begin{tabular}{cl}  
+			\begin{tabular}{c}
+			\parbox{0.45\linewidth}{
+				\begin{equation*}
+				d(C_i, C_j) = \max_{x_l \in C_i, x_m \in C_j} \{d(x_l,x_m)\}
+				\end{equation*}
+			}
+			\end{tabular}
+			& \begin{tabular}{l}
+	  			\includegraphics[width=0.4\linewidth]{img/mas_cercano}
+			\end{tabular}  \\
+		\end{tabular}
+		
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Métodos jerárquicos}
+		
+		\textbf{Distancia promedio}
+		
+		\begin{tabular}{cl}  
+			\begin{tabular}{c}
+			\parbox{0.45\linewidth}{
+				\begin{equation*}
+				d(C_i, C_j) = \dfrac{1}{n_{C_i} n_{C_j}}
+				\sum_{i \in C_i, j \in C_j} d(i,j)
+				\end{equation*}
+			}
+			\end{tabular}
+			& \begin{tabular}{l}
+	  			\includegraphics[width=0.4\linewidth]{img/promedio}
+			\end{tabular}  \\
+		\end{tabular}
+		
+		\vspace{0.5cm}
+		
+		\textbf{Distancia entre centroides}
+		
+		\begin{tabular}{cl}  
+			\begin{tabular}{c}
+			\parbox{0.45\linewidth}{
+				\begin{equation*}
+				d(C_i, C_j) = d(\bar{X}_{C_i}, \bar{X}_{C_j})
+				\end{equation*}
+			}
+			\end{tabular}
+			& \begin{tabular}{l}
+	  			\includegraphics[width=0.4\linewidth]{img/centroides}
+			\end{tabular}  \\
+		\end{tabular}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Métodos no jerárquicos}
+		
+		\textbf{Métodos no jerárquicos} se subdividen en:
+		
+		
+		\begin{itemize}
+		\item \textbf{Métodos de reasignación:} permiten que un individuo asignado a un grupo pueda ser reasignado en otro, si ello optimiza el criterio de selección. El proceso acaba cuando no quedan individuos cuya reasignación optimice el resultado.
+				
+		\item \textbf{Métodos de búsqueda de la densidad:} se encuentran aquellos que proporcionan una aproximación tipológica y una aproximación probabilística.
+		
+		\item \textbf{Métodos directos:} Permiten clasificar simultáneamente a los individuos y a las variables. 
+		
+		\item \textbf{Métodos de reducción de dimensiones:}  consisten en la búsqueda de unos factores en el espacio de los individuos; cada factor
+		corresponde a un grupo.
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Elección de la técnica cluster a emplear en el estudio}
+		
+		\begin{figure}[h]
+			\centering
+			\subfloat{
+				\includegraphics[width=0.5\linewidth]{img/jerarquicos}
+			}
+			\subfloat{
+				\includegraphics[width=0.5\linewidth]{img/no_jerarquicos}
+			}
+		\end{figure}
+	\end{frame}
+	
+	\section{Caso práctico en R}
+		
+	\begin{frame}
+		\frametitle{Caso práctico en R}
+		
+		Vamos a ver ahora un caso práctico en R, para ello vamos a utilizar el conjunto de datos que suele usarse para iniciarse en el clustering, debido a su sencillez. Este conjunto se trata del famoso Iris Dataset.\\
+		
+		Para ello vamos a comenzar cargando el paquete 'datasets' y el conjunto de datos 'iris'.
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.7\linewidth]{img/R1}
+			\label{fig:R1}
+		\end{figure}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{img/R2}
+			\label{fig:R2}
+		\end{figure}		
+
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Caso práctico en R}
+		
+		Para entender mejor el conjunto de datos veamos un resumen estadístico del conjunto de datos con la función summary y veamos las primeras filas con head.
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.75\linewidth]{img/R3}
+			\label{fig:R3}
+		\end{figure}		
+		
+		\vspace*{-0.5cm}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.75\linewidth]{img/R4}
+			\label{fig:R4}
+		\end{figure}
+		
+		\vspace*{-0.5cm}
+			
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.6\linewidth]{img/R5}
+			\label{fig:R5}
+		\end{figure}	
+
+	\end{frame}
+			
+	\begin{frame}
+		\frametitle{Caso práctico en R}
+		Lo siguiente que vamos a hacer es preprocesar los datos. Para ello en primer lugar vamos a eliminar la etiqueta, ya que no la necesitamos para el clustering. Después vamos a definir una función para normalizar los datos y tras esto vamos a proceder a la normalización.
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{img/R6}
+			\label{fig:R6}
+		\end{figure}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Caso práctico en R}
+
+		Apliquemos ahora el algoritmo kmeans sobre los datos para obtener los cluster. Vamos a definir k = 3. Tras realizar el clustering vamos a ver el número de individuos que hay en cada cluster y vamos a ver los centros de cada uno de los cluster
+
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{img/R8}
+			\label{fig:R8}
+		\end{figure}
+
+		\vspace*{-0.5cm}
+
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.7\linewidth]{img/R9}
+			\label{fig:R9}
+		\end{figure}
+			
+	\end{frame}
+			
+		
+	\begin{frame}
+		\frametitle{Caso práctico en R}
+		
+		Por últimos comparemos en un gráfico entre la anchura y longitud de pétalo para ver las diferencias entre las etiquetas originales y los cluster obtenidos. Para ello debemos cargar la biblioteca ggplot2, la cual deberemos de instalar en caso de no tenerla.
+				
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{img/R10}
+			\label{fig:R8}
+		\end{figure}
+		
+		\vspace{-0.7cm}
+		
+		\begin{figure}[h]
+			\centering
+			\subfloat{
+				\includegraphics[width=0.5\linewidth]{img/Rplot1}
+			}
+			\subfloat{
+				\includegraphics[width=0.5\linewidth]{img/Rplot2}
+			}
+		\end{figure}
+	\end{frame}
+	
+			
+	\begin{frame}		
+		\frametitle{}	
+		\centering \Huge
+		\emph{FIN DE LA PRESENTACIÓN}
+	\end{frame}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
